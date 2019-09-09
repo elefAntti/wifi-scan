@@ -57,6 +57,11 @@ int main(int argc, char **argv)
 	// initialize the library with network interface argv[1] (e.g. wlan0)
 	wifi=wifi_scan_init(argv[1]);
 
+	if(wifi == NULL)
+	{
+		return 1;
+	}
+	
 	while(1)
 	{
 		//get information from just the station we are associated with
