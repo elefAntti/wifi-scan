@@ -55,10 +55,10 @@ struct station_info
  * interface - wireless interface, e.g. wlan0, wlan1
  *
  * returns:
- * struct wifi_scan * - pass it to all the functions in the library
+ * struct wifi_scan * - pass it to all the functions in the library or NULL if unsuccessfull
  *
  */
-struct wifi_scan *wifi_scan_init(const char *interface);
+struct wifi_scan* wifi_scan_init(const char *interface);
 
 /* Frees the resources used by library
  *
@@ -112,6 +112,14 @@ int wifi_scan_station(struct wifi_scan *wifi, struct station_info *station);
  *
  */
 int wifi_scan_all(struct wifi_scan *wifi, struct bss_info *bss_infos, int bss_infos_length);
+
+typedef void(*wifi_scan_log_fcn)(const char* fmt, ...);
+
+/*
+* Register callback to be called when the library would print something
+* This is usually due to error
+*/
+void wifi_scan_register_log_callback(wifi_scan_log_fcn fcn);
 
 #ifdef __cplusplus
 }

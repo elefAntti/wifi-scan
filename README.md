@@ -37,7 +37,7 @@ sudo apt-get install libmnl0 libmnl-dev
 # get git
 sudo apt-get install git
 # clone the repository
-git clone https://github.com/bmegli/wifi-scan.git
+git clone https://github.com/elefAntti/wifi-scan.git
 
 # finally build the library and examples
 cd wifi-scan

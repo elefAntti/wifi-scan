@@ -15,10 +15,10 @@ all : $(WIFI_SCAN) $(EXAMPLES)
 examples: $(EXAMPLES)
 
 wifi-scan-station : wifi_scan.o wifi_scan_station.o
-	$(CC) wifi_scan.o wifi_scan_station.o $(LDLIBS) -o wifi-scan-station
+	$(CC) wifi_scan.o wifi_scan_station.o $(LDLIBS) -o wifi-scan-station -static
 
 wifi-scan-all : wifi_scan.o wifi_scan_all.o
-	$(CC) wifi_scan.o wifi_scan_all.o $(LDLIBS) -o wifi-scan-all
+	$(CC) wifi_scan.o wifi_scan_all.o $(LDLIBS) -o wifi-scan-all -static
 
 wifi_scan_station.o : wifi_scan.h examples/wifi_scan_station.c
 	$(CC) $(CFLAGS) examples/wifi_scan_station.c
