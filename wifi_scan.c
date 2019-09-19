@@ -277,6 +277,12 @@ const int NL80211_NEW_SCAN_RESULTS_VALIDATION_LENGTH = sizeof(NL80211_NEW_SCAN_R
 const int NL80211_CMD_NEW_STATION_VALIDATION_LENGTH = sizeof(NL80211_CMD_NEW_STATION_VALIDATION) / sizeof(struct attribute_validation);
 const int NL80211_STA_INFO_VALIDATION_LENGTH = sizeof(NL80211_STA_INFO_VALIDATION) / sizeof(struct attribute_validation);
 
+
+bool wifi_interface_exists(const char *interface)
+{
+  return if_nametoindex(interface) != 0;
+}
+
 // INITIALIZATION
 
 static bool wifi_scan_init_internal(struct wifi_scan* wifi, char* buffer1, char* buffer2, const char *interface)
@@ -783,7 +789,7 @@ static void parse_NL80211_ATTR_BSS(struct nlattr *nested, struct netlink_channel
   if (tb[NL80211_BSS_SEEN_MS_AGO])
     bss->seen_ms_ago = mnl_attr_get_u32(tb[NL80211_BSS_SEEN_MS_AGO]);
 
-  bss->status = status;
+  bss->status = (enum bss_status)status; //TODO: Better conversion
 
   ++scan_results->scanned;
 }

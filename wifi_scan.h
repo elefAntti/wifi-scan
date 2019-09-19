@@ -16,6 +16,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <stdbool.h>
 
 // some constants - mac address length, mac adress string length, max length of wireless network id with null character
 enum wifi_constants {BSSID_LENGTH=6, BSSID_STRING_LENGTH=18, SSID_MAX_LENGTH_WITH_NULL=33};
@@ -46,6 +47,16 @@ struct station_info
 	uint32_t rx_packets; //the number of received packets
 	uint32_t tx_packets; //the number of transmitted packets
 };
+
+
+/*
+ * Check whether there is an interface with given name
+ *
+ * parameters:
+ * interface - wireless interface, e.g. wlan0, wlan1
+ */
+
+bool wifi_interface_exists(const char *interface);
 
 /* Initializes the library
  *
