@@ -732,9 +732,6 @@ static int handle_NL80211_CMD_NEW_SCAN_RESULTS(const struct nlmsghdr *nlh, void 
 
   mnl_attr_parse(nlh, sizeof(*genl), validate, &vd);
 
-  if (tb[NL80211_ATTR_IFINDEX])
-  {
-  }
   if (!tb[NL80211_ATTR_BSS])
     return MNL_CB_OK;
 
@@ -760,7 +757,9 @@ static void parse_NL80211_ATTR_BSS(struct nlattr *nested, struct netlink_channel
     status = mnl_attr_get_u32(tb[NL80211_BSS_STATUS]);
 
   //if we have found associated station store first as last and associated as first
-  if (status == NL80211_BSS_STATUS_ASSOCIATED || status == NL80211_BSS_STATUS_ASSOCIATED || status == NL80211_BSS_STATUS_IBSS_JOINED)
+  if (status == NL80211_BSS_STATUS_ASSOCIATED
+   //|| status == NL80211_BSS_STATUS_AUTHENTICATED
+   || status == NL80211_BSS_STATUS_IBSS_JOINED)
   {
     if (scan_results->scanned > 0 && scan_results->scanned < scan_results->bss_infos_length)
       memcpy(bss, scan_results->bss_infos, sizeof(struct bss_info));
@@ -838,14 +837,24 @@ int wifi_scan_station(struct wifi_scan *wifi, struct station_info *station)
 
   struct context_NL80211_CMD_NEW_SCAN_RESULTS scan_results = { &bss, 1, 0 };
   commands->context = &scan_results;
-  get_scan(commands);
+
+  if (get_scan(commands) == MNL_CB_ERROR)
+  {
+    to_log("get_scan returned an error");
+    return 0;
+  }
 
   if (scan_results.scanned == 0)
     return 0;
 
   struct context_NL80211_CMD_NEW_STATION station_results = { station };
   commands->context = &station_results;
-  get_station(commands, bss.bssid);
+
+  if (get_station(commands, bss.bssid) == MNL_CB_ERROR)
+  {
+    to_log("get_station returned an error");
+    return 0;
+  }
 
   memcpy(station->bssid, bss.bssid, BSSID_LENGTH);
   memcpy(station->ssid, bss.ssid, SSID_MAX_LENGTH_WITH_NULL);
@@ -888,7 +897,7 @@ static int handle_NL80211_CMD_NEW_STATION(const struct nlmsghdr *nlh, void *data
 
   mnl_attr_parse(nlh, sizeof(*genl), validate, &vd);
 
-  if (!tb[NL80211_ATTR_STA_INFO]) //or error, no statoin
+  if (!tb[NL80211_ATTR_STA_INFO]) //or error, no station
     return MNL_CB_OK;
 
   parse_NL80211_ATTR_STA_INFO(tb[NL80211_ATTR_STA_INFO], channel);
